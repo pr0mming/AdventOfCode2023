@@ -1,61 +1,47 @@
-package main
+package problems
 
 import (
-	"bufio"
-	"fmt"
-	"math"
-	"os"
-	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
+
+	common_functions "aoc.2023/lib/common/functions"
 )
 
-type fileScanner struct {
-	*bufio.Scanner
-	file *os.File
-}
+func solveChallenge() int {
+	// Process the input
+	scanner := common_functions.CreateInputScanner("../input.txt")
+	defer scanner.File.Close()
 
-func createScanner(filePath string) (*fileScanner, error) {
-	absPath, _ := filepath.Abs(filePath)
-	file, err := os.Open(absPath)
-	if err != nil {
-		return nil, err
-	}
-
-	return &fileScanner{
-		Scanner: bufio.NewScanner(file),
-		file:    file,
-	}, nil
-}
-
-func main() {
-	filePath := "../input.txt"
-
-	scanner, err := createScanner(filePath)
-	if err != nil {
-		fmt.Println("Error opening the file:", err)
-		return
-	}
-	defer scanner.file.Close()
-
-	answer := solveChallenge(scanner)
-	fmt.Println(answer)
-}
-
-func solveChallenge(scanner *fileScanner) int {
 	var answer = 0
+	var cards []string
+	var cardsMemo = make(map[int]int)
 
-	for scanner.Scan() {
+	for i := 0; scanner.Scan(); i++ {
 		line := scanner.Text()
 
+		cards = append(cards, line)
+		cardsMemo[i] = 1 // Original Card
+	}
+
+	for i, line := range cards {
 		firstIndexSeparator := strings.Index(line, ":")
 		secondIndexSeparator := strings.Index(line, "|")
 
 		winningNumbers := strings.Fields(line[firstIndexSeparator+1 : secondIndexSeparator])
 		myNumbers := strings.Fields(line[secondIndexSeparator+1:])
 
-		answer += computeScore(winningNumbers, myNumbers)
+		ocurrencies := computeScore(winningNumbers, myNumbers)
+
+		if ocurrencies > 0 {
+			for j := i + 1; j <= i+ocurrencies && j < len(cardsMemo); j++ {
+				cardsMemo[j] += cardsMemo[i]
+			}
+		}
+	}
+
+	for _, v := range cardsMemo {
+		answer += v
 	}
 
 	return answer
@@ -76,11 +62,7 @@ func computeScore(winningNumbers []string, myNumbers []string) int {
 		}
 	}
 
-	if n > 0 {
-		return int(math.Pow(2, float64(n-1)))
-	}
-
-	return 0
+	return n
 }
 
 func getIntegersSlice(arr []string) []int {

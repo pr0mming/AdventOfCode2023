@@ -1,54 +1,25 @@
-package main
+package problems
 
 import (
-	"bufio"
-	"fmt"
-	"os"
-	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
+
+	common_functions "aoc.2023/lib/common/functions"
 )
 
+// This constant is used for keep the color and ammount per cubes to validate
 var CONSTRAINTS_MAP = map[string]int{
 	"red":   12,
 	"green": 13,
 	"blue":  14,
 }
 
-type fileScanner struct {
-	*bufio.Scanner
-	file *os.File
-}
+func SolveChallenge() string {
+	// Process the input
+	scanner := common_functions.CreateInputScanner("../input.txt")
+	defer scanner.File.Close()
 
-func createScanner(filePath string) (*fileScanner, error) {
-	absPath, _ := filepath.Abs(filePath)
-	file, err := os.Open(absPath)
-	if err != nil {
-		return nil, err
-	}
-
-	return &fileScanner{
-		Scanner: bufio.NewScanner(file),
-		file:    file,
-	}, nil
-}
-
-func main() {
-	filePath := "../input.txt"
-
-	scanner, err := createScanner(filePath)
-	if err != nil {
-		fmt.Println("Error opening the file:", err)
-		return
-	}
-	defer scanner.file.Close()
-
-	answer := solveChallenge(scanner)
-	fmt.Println(answer)
-}
-
-func solveChallenge(scanner *fileScanner) int {
 	answer := 0
 
 	for scanner.Scan() {
@@ -57,15 +28,14 @@ func solveChallenge(scanner *fileScanner) int {
 		answer += verifyMatch(line)
 	}
 
-	return answer
+	return strconv.Itoa(answer)
 }
 
 func verifyMatch(input string) int {
-
-	// Define a regular expression bagPattern to match numbers and colors
+	// This regex will extract the groups: [ammount] [color] given each input
 	bagPattern := regexp.MustCompile(`(\d+)\s+(\w+)`)
 
-	// Split the input into individual groups
+	// Get the sets per game
 	groups := strings.Split(input, ";")
 
 	// Iterate over each group and extract numbers per color
@@ -78,13 +48,13 @@ func verifyMatch(input string) int {
 			// Convert the matched number from string to int
 			numOfCubes, err := strconv.Atoi(match[1])
 			if err != nil {
-				panic("Error converting string to int:")
+				panic(err)
 			}
 
 			colorCubeConstraint := CONSTRAINTS_MAP[match[2]]
 
+			// If the game doesn't follow the constraints so it's an invalid game (dismiss in the total sum)
 			if numOfCubes > colorCubeConstraint {
-
 				return 0
 			}
 		}
@@ -98,7 +68,7 @@ func verifyMatch(input string) int {
 	// Convert the matched number from string to int
 	gameId, err := strconv.Atoi(match[1])
 	if err != nil {
-		panic("Error converting string to int:")
+		panic(err)
 	}
 
 	return gameId

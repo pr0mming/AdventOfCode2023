@@ -1,15 +1,14 @@
-package main
+package problems_1_2
 
 import (
-	"bufio"
-	"fmt"
-	"os"
-	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
+
+	common_functions "aoc.2023/lib/common/functions"
 )
 
+// This constant is used for getting the right equivalence
 var NUMBERS_MAP = map[string]string{
 	"one":   "1",
 	"two":   "2",
@@ -22,44 +21,14 @@ var NUMBERS_MAP = map[string]string{
 	"nine":  "9",
 }
 
-func main() {
-	filePath := "../input.txt"
+func SolveChallenge() string {
+	// Process the input
+	scanner := common_functions.CreateInputScanner("../input.txt")
+	defer scanner.File.Close()
 
-	scanner, err := createScanner(filePath)
-	if err != nil {
-		fmt.Println("Error opening the file:", err)
-		return
-	}
-	defer scanner.file.Close()
-
-	answer := solveChallenge(scanner)
-	fmt.Println(answer)
-}
-
-type fileScanner struct {
-	*bufio.Scanner
-	file *os.File
-}
-
-func createScanner(filePath string) (*fileScanner, error) {
-	absPath, _ := filepath.Abs(filePath)
-	file, err := os.Open(absPath)
-	if err != nil {
-		return nil, err
-	}
-
-	return &fileScanner{
-		Scanner: bufio.NewScanner(file),
-		file:    file,
-	}, nil
-}
-
-func solveChallenge(scanner *fileScanner) int {
+	// We prepare a Regex approach to detect the written numbers or the [0-9] range
 	answer := 0
-
 	numbersPattern := `(\d|one|two|three|four|five|six|seven|eight|nine)`
-
-	// Compile the regular expression
 	re := regexp.MustCompile(numbersPattern)
 
 	for scanner.Scan() {
@@ -67,6 +36,8 @@ func solveChallenge(scanner *fileScanner) int {
 
 		var matches []string
 
+		// We iterate the input until find all the occurrences
+		// it's due I wasn't able to implement the occurrences overlaped using only the regex
 		for {
 			numberMatchIndex := re.FindStringIndex(line)
 
@@ -76,13 +47,17 @@ func solveChallenge(scanner *fileScanner) int {
 
 			matches = append(matches, line[numberMatchIndex[0]:numberMatchIndex[1]])
 
+			// We cut the current input from the last position of the occurrence to recalculate again...
 			line = line[numberMatchIndex[0]+1:]
 		}
 
 		var numberForLine [2]string
 
+		// How it's supposed to get always at least 1 entry we set this array with that value
 		numberForLine[0] = matches[0]
 
+		// If there is only 1 entry then we set the 2th position of the array with the 1th position
+		// Otherwise we choose the last occurrence
 		if len(matches) > 1 {
 			numberForLine[1] = matches[len(matches)-1]
 		} else {
@@ -92,22 +67,23 @@ func solveChallenge(scanner *fileScanner) int {
 		answer += getNumberInt(numberForLine)
 	}
 
-	return answer
+	return strconv.Itoa(answer)
 }
 
 func getNumberInt(numberArr [2]string) int {
 	for i, v := range numberArr {
+		// For example, "one" is a valid string for this condition, so that we extract the number equivalence form the map
+		// Otherwise we keep the number
 		if len(v) > 1 {
 			numberArr[i] = NUMBERS_MAP[v]
 		}
 	}
 
+	// We join the array and convert it to integer
 	numberInt, err := strconv.Atoi(strings.Join(numberArr[:], ""))
 	if err != nil {
 		panic(err)
 	}
-
-	//fmt.Println(numberArr, numberInt)
 
 	return numberInt
 }
