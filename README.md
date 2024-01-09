@@ -1,6 +1,6 @@
 ## Advent of Code 2023
 
-This is my first attempt solving the [https://adventofcode.com](Advent of Code), It's just an implementation using Go :)
+This is my first attempt solving the [Advent of Code](https://adventofcode.com), It's just an implementation using Go!
 
 ## Getting Started :rocket:
 
