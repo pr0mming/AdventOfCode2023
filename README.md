@@ -24,6 +24,5 @@ I used these technologies:
 
 ## TODO List :page_with_curl:
 
-- Add **time execution** for each problem solution.
 - See **improvements** in the implementations
 - Solve **all** the problems!

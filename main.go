@@ -17,7 +17,7 @@ func main() {
 		if err != nil {
 			fmt.Println(err)
 		} else {
-			fmt.Println(answer)
+			fmt.Printf("Answer: %s", answer)
 		}
 
 	} else {

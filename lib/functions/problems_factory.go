@@ -2,7 +2,9 @@ package functions
 
 import (
 	"errors"
+	"fmt"
 	"strings"
+	"time"
 
 	problems_1_1 "aoc.2023/problems/1/part-1"
 	problems_1_2 "aoc.2023/problems/1/part-2"
@@ -22,6 +24,9 @@ func SolveProblemByKey(args []string) (string, error) {
 
 	key := strings.Join(args, "")
 	problemId := args[0]
+
+	// Measure the solution
+	start := time.Now()
 
 	switch key {
 	case "11":
@@ -43,8 +48,11 @@ func SolveProblemByKey(args []string) (string, error) {
 	case "51":
 		answer = problems_5_1.SolveChallenge(problemId)
 	default:
-		return "", errors.New("The given input is not in a valid range, try something like: [1 1]")
+		return "", errors.New("The given args aren not in a valid range, try something like: [1 1]")
 	}
+
+	duration := time.Since(start)
+	fmt.Println(fmt.Sprintf("This solution took: %s", duration))
 
 	return answer, nil
 }
