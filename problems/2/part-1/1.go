@@ -1,6 +1,7 @@
-package problems
+package problems_2_1
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -15,9 +16,10 @@ var CONSTRAINTS_MAP = map[string]int{
 	"blue":  14,
 }
 
-func SolveChallenge() string {
+func SolveChallenge(problemId string) string {
 	// Process the input
-	scanner := common_functions.CreateInputScanner("../input.txt")
+	inputFilePath := fmt.Sprintf("problems/%s/input.txt", problemId)
+	scanner := common_functions.CreateInputScanner(inputFilePath)
 	defer scanner.File.Close()
 
 	answer := 0

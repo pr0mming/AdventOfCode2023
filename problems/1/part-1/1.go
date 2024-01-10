@@ -1,14 +1,16 @@
 package problems_1_1
 
 import (
+	"fmt"
 	"strconv"
 
 	common_functions "aoc.2023/lib/common/functions"
 )
 
-func SolveChallenge() string {
+func SolveChallenge(problemId string) string {
 	// Process the input
-	scanner := common_functions.CreateInputScanner("../input.txt")
+	inputFilePath := fmt.Sprintf("problems/%s/input.txt", problemId)
+	scanner := common_functions.CreateInputScanner(inputFilePath)
 	defer scanner.File.Close()
 
 	answer := 0

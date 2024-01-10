@@ -1,6 +1,7 @@
-package problems
+package problems_4_1
 
 import (
+	"fmt"
 	"math"
 	"sort"
 	"strconv"
@@ -9,9 +10,10 @@ import (
 	common_functions "aoc.2023/lib/common/functions"
 )
 
-func solveChallenge() int {
+func SolveChallenge(problemId string) string {
 	// Process the input
-	scanner := common_functions.CreateInputScanner("../input.txt")
+	inputFilePath := fmt.Sprintf("problems/%s/input.txt", problemId)
+	scanner := common_functions.CreateInputScanner(inputFilePath)
 	defer scanner.File.Close()
 
 	var answer = 0
@@ -19,6 +21,7 @@ func solveChallenge() int {
 	for scanner.Scan() {
 		line := scanner.Text()
 
+		// Extra work to extract the numbers for each card
 		firstIndexSeparator := strings.Index(line, ":")
 		secondIndexSeparator := strings.Index(line, "|")
 
@@ -28,12 +31,13 @@ func solveChallenge() int {
 		answer += computeScore(winningNumbers, myNumbers)
 	}
 
-	return answer
+	return strconv.Itoa(answer)
 }
 
 func computeScore(winningNumbers []string, myNumbers []string) int {
-	integersForWN := getIntegersSlice(winningNumbers)
-	integersForMN := getIntegersSlice(myNumbers)
+	// Convert the arr string to arr integer, because it's used for Binary Search
+	integersForWN := common_functions.GetIntegersArr(winningNumbers, true)
+	integersForMN := common_functions.GetIntegersArr(myNumbers, true)
 	n := 0
 
 	for _, v := range integersForMN {
@@ -41,6 +45,7 @@ func computeScore(winningNumbers []string, myNumbers []string) int {
 			return integersForWN[i] >= v
 		})
 
+		// This validation is if the number was founded
 		if i < len(integersForWN) && integersForWN[i] == v {
 			n += 1
 		}
@@ -51,22 +56,4 @@ func computeScore(winningNumbers []string, myNumbers []string) int {
 	}
 
 	return 0
-}
-
-func getIntegersSlice(arr []string) []int {
-	integers := make([]int, len(arr))
-
-	for i, v := range arr {
-		n, err := strconv.Atoi(v)
-
-		if err != nil {
-			panic(err)
-		}
-
-		integers[i] = n
-	}
-
-	sort.Ints(integers)
-
-	return integers
 }

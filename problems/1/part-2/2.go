@@ -1,6 +1,7 @@
 package problems_1_2
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -21,9 +22,10 @@ var NUMBERS_MAP = map[string]string{
 	"nine":  "9",
 }
 
-func SolveChallenge() string {
+func SolveChallenge(problemId string) string {
 	// Process the input
-	scanner := common_functions.CreateInputScanner("../input.txt")
+	inputFilePath := fmt.Sprintf("problems/%s/input.txt", problemId)
+	scanner := common_functions.CreateInputScanner(inputFilePath)
 	defer scanner.File.Close()
 
 	// We prepare a Regex approach to detect the written numbers or the [0-9] range

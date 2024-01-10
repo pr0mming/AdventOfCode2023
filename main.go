@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"aoc.2023/lib/functions"
 )
@@ -12,9 +11,8 @@ func main() {
 	argsWithProg := os.Args
 
 	if len(argsWithProg) >= 2 {
-		problemFlag := strings.Join(argsWithProg[1:], "")
 
-		answer, err := functions.SolveProblemByKey(problemFlag)
+		answer, err := functions.SolveProblemByKey(argsWithProg[1:])
 
 		if err != nil {
 			fmt.Println(err)

@@ -1,15 +1,23 @@
-package problems
+package problems_3_1
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 
 	common_functions "aoc.2023/lib/common/functions"
 )
 
-func solveChallenge() int {
+// Use global variables to avoid reinitialized inside the loop
+var NUMBERS_PATTERN = regexp.MustCompile(`([0-9]+)`)
+var NO_SYMBOLS_PATTERN = regexp.MustCompile(`([0-9\.])+`)
+var MATRIX_ROWS_LIMIT = 0
+var MATRIX_COLS_LIMIT = 0
+
+func SolveChallenge(problemId string) string {
 	// Process the input
-	scanner := common_functions.CreateInputScanner("../input.txt")
+	inputFilePath := fmt.Sprintf("problems/%s/input.txt", problemId)
+	scanner := common_functions.CreateInputScanner(inputFilePath)
 	defer scanner.File.Close()
 
 	var answer = 0
@@ -21,56 +29,43 @@ func solveChallenge() int {
 		matrix = append(matrix, line)
 	}
 
+	// We use these limits to know if we can move on the iteration across the matrix
+	MATRIX_ROWS_LIMIT = len(matrix) - 1
+	MATRIX_COLS_LIMIT = len(matrix[0]) - 1
+
 	for i, v := range matrix {
 		answer += computeLine(v, i, matrix)
 	}
 
-	return answer
+	return strconv.Itoa(answer)
 }
 
 func computeLine(input string, lineIndex int, matrix []string) int {
-	numbersPattern := regexp.MustCompile(`([0-9]+)`)
-	noSymbolsPattern := regexp.MustCompile(`([0-9\.])+`)
-
-	var matches [][]int = numbersPattern.FindAllStringIndex(input, -1)
+	// Detect all the numbers in the current line
+	var matches [][]int = NUMBERS_PATTERN.FindAllStringIndex(input, -1)
 	var lineSum int = 0
 
-	var matrixRowsLimit = len(matrix) - 1
-	var matrixColsLimit = len(matrix[0]) - 1
-
 	for _, matchIndex := range matches {
-
 		for i := matchIndex[0]; i < matchIndex[1]; i++ {
-			// Evaluate only rows
-			if lineIndex > 0 && !noSymbolsPattern.MatchString(string(matrix[lineIndex-1][i])) ||
-				lineIndex < matrixRowsLimit && !noSymbolsPattern.MatchString(string(matrix[lineIndex+1][i])) ||
-				// Evaluate only columns
-				i > 0 && !noSymbolsPattern.MatchString(string(matrix[lineIndex][i-1])) ||
-				i < matrixColsLimit && !noSymbolsPattern.MatchString(string(matrix[lineIndex][i+1])) ||
+			// Evaluate only rows ↑↓
+			if lineIndex > 0 && !NO_SYMBOLS_PATTERN.MatchString(string(matrix[lineIndex-1][i])) ||
+				lineIndex < MATRIX_ROWS_LIMIT && !NO_SYMBOLS_PATTERN.MatchString(string(matrix[lineIndex+1][i])) ||
+				// Evaluate only columns ← →
+				i > 0 && !NO_SYMBOLS_PATTERN.MatchString(string(matrix[lineIndex][i-1])) ||
+				i < MATRIX_COLS_LIMIT && !NO_SYMBOLS_PATTERN.MatchString(string(matrix[lineIndex][i+1])) ||
 				// Evaluate only diagonals
-				lineIndex > 0 && i > 0 && !noSymbolsPattern.MatchString(string(matrix[lineIndex-1][i-1])) ||
-				lineIndex > 0 && i < matrixColsLimit && !noSymbolsPattern.MatchString(string(matrix[lineIndex-1][i+1])) ||
-				lineIndex < matrixRowsLimit && i > 0 && !noSymbolsPattern.MatchString(string(matrix[lineIndex+1][i-1])) ||
-				lineIndex < matrixRowsLimit && i < matrixColsLimit && !noSymbolsPattern.MatchString(string(matrix[lineIndex+1][i+1])) {
+				lineIndex > 0 && i > 0 && !NO_SYMBOLS_PATTERN.MatchString(string(matrix[lineIndex-1][i-1])) ||
+				lineIndex > 0 && i < MATRIX_COLS_LIMIT && !NO_SYMBOLS_PATTERN.MatchString(string(matrix[lineIndex-1][i+1])) ||
+				lineIndex < MATRIX_ROWS_LIMIT && i > 0 && !NO_SYMBOLS_PATTERN.MatchString(string(matrix[lineIndex+1][i-1])) ||
+				lineIndex < MATRIX_ROWS_LIMIT && i < MATRIX_COLS_LIMIT && !NO_SYMBOLS_PATTERN.MatchString(string(matrix[lineIndex+1][i+1])) {
 
 				numberStrTmp := matrix[lineIndex][matchIndex[0]:matchIndex[1]]
-				lineSum += getIntegerByString(numberStrTmp)
+				lineSum += common_functions.Atoi(numberStrTmp)
 
 				break
 			}
-
 		}
-
 	}
 
 	return lineSum
-}
-
-func getIntegerByString(numberStrTmp string) int {
-	numberIntTmp, err := strconv.Atoi(numberStrTmp)
-	if err != nil {
-		panic(err)
-	}
-
-	return numberIntTmp
 }

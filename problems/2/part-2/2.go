@@ -1,6 +1,7 @@
-package problems
+package problems_2_2
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -8,9 +9,10 @@ import (
 	common_functions "aoc.2023/lib/common/functions"
 )
 
-func solveChallenge() int {
+func SolveChallenge(problemId string) string {
 	// Process the input
-	scanner := common_functions.CreateInputScanner("../input.txt")
+	inputFilePath := fmt.Sprintf("problems/%s/input.txt", problemId)
+	scanner := common_functions.CreateInputScanner(inputFilePath)
 	defer scanner.File.Close()
 
 	var answer = 0
@@ -21,7 +23,7 @@ func solveChallenge() int {
 		answer += getCubesProd(line)
 	}
 
-	return answer
+	return strconv.Itoa(answer)
 }
 
 func getCubesProd(input string) int {

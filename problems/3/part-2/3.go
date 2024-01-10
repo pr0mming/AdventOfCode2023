@@ -1,15 +1,17 @@
-package problems
+package problems_3_2
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 
 	common_functions "aoc.2023/lib/common/functions"
 )
 
-func solveChallenge() uint64 {
+func SolveChallenge(problemId string) string {
 	// Process the input
-	scanner := common_functions.CreateInputScanner("../input.txt")
+	inputFilePath := fmt.Sprintf("problems/%s/input.txt", problemId)
+	scanner := common_functions.CreateInputScanner(inputFilePath)
 	defer scanner.File.Close()
 
 	var answer uint64
@@ -30,7 +32,7 @@ func solveChallenge() uint64 {
 		answer += resultTmp
 	}
 
-	return answer
+	return strconv.FormatUint(answer, 10)
 }
 
 func computeLine(input string, lineIndex int, matrix []string, numbersMatrix [][][]int) uint64 {
