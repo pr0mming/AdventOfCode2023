@@ -1,8 +1,10 @@
 package problems_5_1
 
 import (
+	"cmp"
 	"fmt"
 	"slices"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -16,7 +18,8 @@ func SolveChallenge(problemId string) string {
 	defer scanner.File.Close()
 
 	var seeds []int
-	var gardenMaps [][]int
+	var gardenMapTmp [][]int
+	var gardenMaps [][][]int
 
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
@@ -29,52 +32,72 @@ func SolveChallenge(problemId string) string {
 				separatorIndex := strings.Index(line, ":")
 				seedsStr := strings.Fields(line[separatorIndex+1:])
 
+				// Convert and sort
 				seeds = common_functions.GetIntegersArr(seedsStr, false)
+				slices.Sort(seeds)
 
 				continue
 			}
 
 			// This is to save the map of resources of the garden
 			if !strings.HasSuffix(line, "map:") {
-				gardenMaps = append(gardenMaps, common_functions.GetIntegersArr(strings.Fields(line), false))
+				// Make conversion
+				valuesTmp := strings.Fields(line)
+				gardenMapTmp = append(gardenMapTmp, common_functions.GetIntegersArr(valuesTmp, false))
 			} else {
-				if gardenMaps != nil {
-					// Make the conversion
-					computeGardenMap(&seeds, gardenMaps)
-					gardenMaps = nil
+				if gardenMapTmp != nil {
+					// Sort by index 1 (input)
+					sortGardenByOutputKey(gardenMapTmp)
+					gardenMaps = append(gardenMaps, gardenMapTmp)
+
+					gardenMapTmp = nil
 				}
 			}
 		}
 	}
 
-	computeGardenMap(&seeds, gardenMaps)
+	// Make the process with the last one
+	sortGardenByOutputKey(gardenMapTmp)
+	gardenMaps = append(gardenMaps, gardenMapTmp)
 
+	for _, gardenMap := range gardenMaps {
+		computeGardenMap(&seeds, gardenMap)
+	}
+
+	// Return the minimum transformation
 	return strconv.Itoa(slices.Min(seeds))
 }
 
-func computeGardenMap(seeds *[]int, gardenMaps [][]int) {
-	entriesFounded := 0
+func sortGardenByOutputKey(gardenMap [][]int) {
+	// Sort the items of the garden by the index 1, to take in account in Binary Search
+	slices.SortFunc(gardenMap, func(a, b []int) int {
+		return cmp.Compare(a[1], b[1])
+	})
+}
 
-	for i, seed := range *seeds {
-		for _, gardenMap := range gardenMaps {
-			// Extact the limit for this map
-			limitTmp := (gardenMap[1] + gardenMap[2]) - 1
+func computeGardenMap(seeds *[]int, targetGardenMap [][]int) {
+	for i, input := range *seeds {
+		// Check if the seed is in the range using Binary Search
+		iFounded := sort.Search(len(targetGardenMap), func(i int) bool {
+			mapTmp := targetGardenMap[i]
 
-			// If the seed is in the range
-			if gardenMap[1] <= seed && limitTmp >= seed {
-				// Calculate the number of the range
-				diffTmp := seed - gardenMap[1]
-				newValue := gardenMap[0] + diffTmp
+			limitOutputTmp := (mapTmp[1] + mapTmp[2]) - 1
 
-				(*seeds)[i] = newValue
+			return mapTmp[1] >= input || limitOutputTmp >= input
+		})
 
-				entriesFounded += 1
+		// If the element is in there ...
+		if iFounded < len(targetGardenMap) {
+			mapTmp := targetGardenMap[iFounded]
 
-				// Avoid extra iterations
-				if entriesFounded == len(*seeds) {
-					return
-				}
+			limitOutputTmp := (mapTmp[1] + mapTmp[2]) - 1
+
+			// Update the same value seed with the equivalence
+			if mapTmp[1] <= input && limitOutputTmp >= input {
+				(*seeds)[i] = mapTmp[0] + (input - mapTmp[1])
 			}
 		}
+
+		// Otherwise we keep the same value
 	}
 }
