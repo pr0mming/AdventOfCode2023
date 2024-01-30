@@ -32,9 +32,8 @@ func SolveChallenge(problemId string) string {
 				separatorIndex := strings.Index(line, ":")
 				seedsStr := strings.Fields(line[separatorIndex+1:])
 
-				// Convert and sort
+				// Convert to integers, (isn't necessary sort)
 				seeds = common_functions.GetIntegersArr(seedsStr, false)
-				slices.Sort(seeds)
 
 				continue
 			}

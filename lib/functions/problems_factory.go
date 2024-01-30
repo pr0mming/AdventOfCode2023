@@ -15,6 +15,7 @@ import (
 	problems_4_1 "aoc.2023/problems/4/part-1"
 	problems_4_2 "aoc.2023/problems/4/part-2"
 	problems_5_1 "aoc.2023/problems/5/part-1"
+	problems_5_2 "aoc.2023/problems/5/part-2"
 )
 
 // This "Factory Method" triggers the problem solution
@@ -47,6 +48,8 @@ func SolveProblemByKey(args []string) (string, error) {
 		answer = problems_4_2.SolveChallenge(problemId)
 	case "51":
 		answer = problems_5_1.SolveChallenge(problemId)
+	case "52":
+		answer = problems_5_2.SolveChallenge(problemId)
 	default:
 		return "", errors.New("The given args aren not in a valid range, try something like: [1 1]")
 	}
