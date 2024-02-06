@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	common_functions "aoc.2023/lib/common/functions"
+	common_types "aoc.2023/lib/common/types"
 )
 
 var STARTING_POINT_SUFFIX = "A"
@@ -34,27 +35,7 @@ func SolveChallenge(problemId string) string {
 	}
 
 	// Use logic to map the string inputs in the map
-	splitPattern := regexp.MustCompile(`(\w+)\s*=\s*\(([^)]+)\)`)
-	var startingNodes []string
-
-	for scanner.Scan() {
-		line := scanner.Text()
-
-		matches := splitPattern.FindStringSubmatch(line)
-
-		point := matches[1]
-		paths := strings.Split(matches[2], ",")
-
-		pathValue := [2]string{strings.TrimSpace(paths[0]), strings.TrimSpace(paths[1])}
-
-		// We use a map to keep the values as ["AAA"] = [POINT1, POINT 2] to ease accessibility
-		networkMap[point] = pathValue
-
-		// Now we need n nodes to analyze, this time those that start with "A"
-		if strings.HasSuffix(point, "A") {
-			startingNodes = append(startingNodes, point)
-		}
-	}
+	startingNodes, networkMap := getNetworkInput(*scanner)
 
 	// Keep the number of steps (cost of reaching the end) for each point
 	// We can you a bit of numbers to guess the answer instead of a full work iteration per each entry
@@ -91,6 +72,34 @@ func SolveChallenge(problemId string) string {
 	}
 
 	return strconv.Itoa(answer)
+}
+
+func getNetworkInput(scanner common_types.FileInputScanner) ([]string, map[string][2]string) {
+	var startingNodes []string
+	var networkMap = make(map[string][2]string)
+
+	splitPattern := regexp.MustCompile(`(\w+)\s*=\s*\(([^)]+)\)`)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		matches := splitPattern.FindStringSubmatch(line)
+
+		point := matches[1]
+		paths := strings.Split(matches[2], ",")
+
+		pathValue := [2]string{strings.TrimSpace(paths[0]), strings.TrimSpace(paths[1])}
+
+		// We use a map to keep the values as ["AAA"] = [POINT1, POINT 2] to ease accessibility
+		networkMap[point] = pathValue
+
+		// Now we need n nodes to analyze, this time those that start with "A"
+		if strings.HasSuffix(point, "A") {
+			startingNodes = append(startingNodes, point)
+		}
+	}
+
+	return startingNodes, networkMap
 }
 
 func computeStepByNode(startNode string, instructions string, networkMap map[string][2]string) int {

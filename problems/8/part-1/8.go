@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	common_functions "aoc.2023/lib/common/functions"
+	common_types "aoc.2023/lib/common/types"
 )
 
 var STARTING_POINT_REF = "AAA"
@@ -33,21 +34,7 @@ func SolveChallenge(problemId string) string {
 	}
 
 	// Use logic to map the string inputs in the map
-	splitPattern := regexp.MustCompile(`(\w+)\s*=\s*\(([^)]+)\)`)
-
-	for scanner.Scan() {
-		line := scanner.Text()
-
-		matches := splitPattern.FindStringSubmatch(line)
-
-		point := matches[1]
-		paths := strings.Split(matches[2], ",")
-
-		pathValue := [2]string{strings.TrimSpace(paths[0]), strings.TrimSpace(paths[1])}
-
-		// We use a map to keep the values as ["AAA"] = [POINT1, POINT 2] to ease accessibility
-		networkMap[point] = pathValue
-	}
+	networkMap = getNetworkInput(*scanner)
 
 	answer := 0
 	currentKeyPath := STARTING_POINT_REF // AAA
@@ -85,4 +72,26 @@ func SolveChallenge(problemId string) string {
 	}
 
 	return strconv.Itoa(answer)
+}
+
+func getNetworkInput(scanner common_types.FileInputScanner) map[string][2]string {
+	var networkMap = make(map[string][2]string)
+
+	splitPattern := regexp.MustCompile(`(\w+)\s*=\s*\(([^)]+)\)`)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		matches := splitPattern.FindStringSubmatch(line)
+
+		point := matches[1]
+		paths := strings.Split(matches[2], ",")
+
+		pathValue := [2]string{strings.TrimSpace(paths[0]), strings.TrimSpace(paths[1])}
+
+		// We use a map to keep the values as ["AAA"] = [POINT1, POINT 2] to ease accessibility
+		networkMap[point] = pathValue
+	}
+
+	return networkMap
 }
