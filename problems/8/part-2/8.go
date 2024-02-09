@@ -11,8 +11,8 @@ import (
 	common_types "aoc.2023/lib/common/types"
 )
 
-var STARTING_POINT_SUFFIX = "A"
-var ENDING_POINT_SUFFIX = "Z"
+const STARTING_POINT_SUFFIX = "A"
+const ENDING_POINT_SUFFIX = "Z"
 
 func SolveChallenge(problemId string) string {
 	// Process the input

@@ -10,8 +10,8 @@ import (
 	common_types "aoc.2023/lib/common/types"
 )
 
-var STARTING_POINT_REF = "AAA"
-var ENDING_POINT_REF = "ZZZ"
+const STARTING_POINT_REF = "AAA"
+const ENDING_POINT_REF = "ZZZ"
 
 func SolveChallenge(problemId string) string {
 	// Process the input
