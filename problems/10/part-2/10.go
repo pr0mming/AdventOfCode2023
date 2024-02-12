@@ -1,8 +1,5 @@
 package problems_10_2
 
-// #cgo LDFLAGS: -lgeos_c
-// #include <geos_c.h>
-
 import (
 	"fmt"
 	"math"
@@ -42,30 +39,48 @@ func SolveChallenge(problemId string) string {
 
 	var answer float64 = 0
 
+	// Get set of points (X,Y) of the pipe network
 	pipeNetworkMap := getPipeNetworkMap(*scanner)
 
+	// Calculate area of the polygon
 	polygonArea := getPolygonArea(pipeNetworkMap)
-	b := float64(len(pipeNetworkMap))
 
-	answer = (polygonArea - (b / 2)) + 1
+	// Get number of interior points
+	answer = getInteriorPoints(polygonArea, len(pipeNetworkMap))
 
 	return strconv.FormatFloat(answer, 'f', -1, 64)
 }
 
-func getPolygonArea(polygon [][2]int) float64 {
-	var (
-		xProd int = 0
-		yProd int = 0
-	)
+// The following two methods is an approach taken from:
+// https://www.reddit.com/r/adventofcode/comments/18f1sgh/2023_day_10_part_2_advise_on_part_2/
+// Using Pick's Theoreme + Shoelace formula to get the inside points of the pipe network (polygon)
 
-	for i := 1; i < len(polygon); i++ {
-		xProd += (polygon[i][0] * polygon[i-1][1])
-		yProd += (polygon[i][1] * polygon[i-1][0])
+func getInteriorPoints(area float64, lenpoints int) float64 {
+	// Taken the Pick's Theoreme approach: https://en.wikipedia.org/wiki/Pick%27s_theorem
+
+	b := float64(lenpoints)
+
+	i := (area - (b / 2)) + 1
+
+	return i
+}
+
+func getPolygonArea(polygon [][2]int) float64 {
+	// Taken the Shoelace formula approach to calculate the polygon area: https://en.wikipedia.org/wiki/Shoelace_formula
+
+	n := len(polygon)
+
+	// Initialize variables for the shoelace formula
+	var area float64
+	j := n - 1
+
+	// Apply the shoelace formula
+	for i := 0; i < n; i++ {
+		area += float64((polygon[j][0] + polygon[i][0]) * (polygon[j][1] - polygon[i][1]))
+		j = i
 	}
 
-	var absSum = math.Abs(float64(xProd) - float64(yProd))
-
-	return math.Floor(absSum / 2)
+	return math.Abs(area) / 2
 }
 
 func getPipeNetworkMap(scanner common_types.FileInputScanner) [][2]int {
@@ -89,7 +104,6 @@ func getPipeNetworkMap(scanner common_types.FileInputScanner) [][2]int {
 		var (
 			pathResult      = animalPos
 			directionResult = animalDir
-			minPosIndex     = 0
 		)
 
 		// Infinite loop that breaks when we can't travel in the pipe network
@@ -108,21 +122,13 @@ func getPipeNetworkMap(scanner common_types.FileInputScanner) [][2]int {
 				posTmp := pipeNetwork[pathResult[0]][pathResult[1]]
 				if posTmp == ANIMAL_FLAG {
 
-					fmt.Println(pipeNetworkMap[minPosIndex])
-					pipeNetworkMapTmp := pipeNetworkMap[minPosIndex:]
-					pipeNetworkMapTmp = append(pipeNetworkMapTmp, pipeNetworkMap[0:minPosIndex]...)
-
-					return pipeNetworkMapTmp
+					return pipeNetworkMap
 				}
 
 				break
 			}
 
 			pipeNetworkMap = append(pipeNetworkMap, [2]int{pathResult[0], pathResult[1]})
-
-			if pathResult[0] <= pipeNetworkMap[minPosIndex][0] && pathResult[1] < pipeNetworkMap[minPosIndex][1] {
-				minPosIndex = len(pipeNetworkMap) - 1
-			}
 		}
 	}
 
