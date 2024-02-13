@@ -9,10 +9,12 @@ import (
 )
 
 // Use global variables to avoid reinitialized inside the loop
-var NUMBERS_PATTERN = regexp.MustCompile(`([0-9]+)`)
-var NO_SYMBOLS_PATTERN = regexp.MustCompile(`([0-9\.])+`)
-var MATRIX_ROWS_LIMIT = 0
-var MATRIX_COLS_LIMIT = 0
+var (
+	NUMBERS_PATTERN    = regexp.MustCompile(`([0-9]+)`)
+	NO_SYMBOLS_PATTERN = regexp.MustCompile(`([0-9\.])+`)
+	MATRIX_ROWS_LIMIT  = 0
+	MATRIX_COLS_LIMIT  = 0
+)
 
 func SolveChallenge(problemId string) string {
 	// Process the input
@@ -20,8 +22,10 @@ func SolveChallenge(problemId string) string {
 	scanner := common_functions.CreateInputScanner(inputFilePath)
 	defer scanner.File.Close()
 
-	var answer = 0
-	var matrix []string
+	var (
+		answer = 0
+		matrix []string
+	)
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -42,8 +46,10 @@ func SolveChallenge(problemId string) string {
 
 func computeLine(input string, lineIndex int, matrix []string) int {
 	// Detect all the numbers in the current line
-	var matches [][]int = NUMBERS_PATTERN.FindAllStringIndex(input, -1)
-	var lineSum int = 0
+	var (
+		matches [][]int = NUMBERS_PATTERN.FindAllStringIndex(input, -1)
+		lineSum int     = 0
+	)
 
 	for _, matchIndex := range matches {
 		for i := matchIndex[0]; i < matchIndex[1]; i++ {

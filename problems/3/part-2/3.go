@@ -9,9 +9,11 @@ import (
 )
 
 // Use global variables to avoid reinitialized inside the loop
-var NUMBERS_PATTERN = regexp.MustCompile(`([0-9]+)`)
-var SYMBOLS_PATTERN = regexp.MustCompile(`[^0-9.]`)
-var MATRIX_ROWS_LIMIT = 0
+var (
+	NUMBERS_PATTERN   = regexp.MustCompile(`([0-9]+)`)
+	SYMBOLS_PATTERN   = regexp.MustCompile(`[^0-9.]`)
+	MATRIX_ROWS_LIMIT = 0
+)
 
 func SolveChallenge(problemId string) string {
 	// Process the input
@@ -19,9 +21,11 @@ func SolveChallenge(problemId string) string {
 	scanner := common_functions.CreateInputScanner(inputFilePath)
 	defer scanner.File.Close()
 
-	var answer uint64
-	var matrix []string
-	var numbersMatrix [][][]int
+	var (
+		answer        uint64
+		matrix        []string
+		numbersMatrix [][][]int
+	)
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -42,9 +46,10 @@ func SolveChallenge(problemId string) string {
 }
 
 func computeLine(input string, lineIndex int, matrix []string, numbersMatrix [][][]int) uint64 {
-	var totalSum uint64 = 0
-	// Extract all the allowed symbols (index start and end) to iterate
-	var matches [][]int = SYMBOLS_PATTERN.FindAllStringIndex(input, -1)
+	var (
+		totalSum uint64  = 0
+		matches  [][]int = SYMBOLS_PATTERN.FindAllStringIndex(input, -1) // Extract all the allowed symbols (index start and end) to iterate
+	)
 
 	for _, matchIndex := range matches {
 		var lineProd uint64 = 1
