@@ -3,7 +3,6 @@ package problems_13_1
 import (
 	"fmt"
 	"strconv"
-	"strings"
 
 	common_functions "aoc.2023/lib/common/functions"
 )
@@ -23,12 +22,15 @@ func SolveChallenge(problemId string) string {
 		continueFile := scanner.Scan()
 		line := scanner.Text()
 
-		if len(strings.TrimSpace(line)) == 0 || !continueFile {
+		// If we have a blank space, then we process the current input
+		// Or if we're in last input
+		if len(line) == 0 || !continueFile {
 
 			answer += processInputPattern(input)
 			input = nil
 
 		} else {
+			// Collect the rows of the current input
 			input = append(input, line)
 		}
 
@@ -41,59 +43,72 @@ func SolveChallenge(problemId string) string {
 }
 
 func processInputPattern(input []string) int {
-	verticalReflections := findVerticalReflections(input)
+	// First reflected columns
+	var reflectionsResult = findVerticalReflections(input)
 
-	if verticalReflections == 0 {
-		return findHorizontalReflections(input)
+	// If is > -1 then we have reflected columns!
+	if reflectionsResult > -1 {
+		return reflectionsResult
 	}
 
-	return verticalReflections * 100
+	// First reflected rows
+	reflectionsResult = findHorizontalReflections(input)
+
+	if reflectionsResult > -1 {
+		return reflectionsResult * 100
+	}
+
+	// There isn't reflected columns and rows (it shouldn't happen)
+	return 0
 }
 
 func findVerticalReflections(input []string) int {
 	var newInput = make([]string, len(input[0]))
 
+	// This is to convert columns to rows
+	// A B  =>  A C
+	// C D      B D
+	// To avoid compare char by char
+
 	for _, row := range input {
 		for i := 0; i < len(row); i++ {
-			newInput[i] = string(row[i]) + newInput[i]
+			newInput[i] += string(row[i])
 		}
 	}
 
+	// Reuse the same logic for horizontal reflections
 	return findHorizontalReflections(newInput)
 }
 
 func findHorizontalReflections(input []string) int {
 	var (
-		matches         = make(map[string][]int)
-		reflections int = 0
+		reflectedIndex int = -1 // Save the last index of the reflected row
+		lenInput       int = len(input)
 	)
 
-	for i, row := range input {
+	for i := 1; i < lenInput; i++ {
 
-		if _, ok := matches[row]; ok {
-			indexes := matches[row]
+		// We have a reflected rows
+		if input[i-1] == input[i] {
+			reflectedIndex = i
 
-			indexes = append(indexes, i)
-			matches[row] = indexes
-		} else {
-			matches[row] = []int{i}
-		}
+			// Iterate from the reflectedIndex (+1 and -1) value, to verify if it'is a perfect reflection
+			for i, j := reflectedIndex, reflectedIndex-1; i < lenInput && j >= 0; i, j = i+1, j-1 {
+				if input[i] != input[j] {
+					// It's not actually reflected...
+					reflectedIndex = -1
+					break
+				}
+			}
 
-	}
-
-	for _, v := range matches {
-		if len(v) == 2 {
-			if v[1]-v[0] == 1 {
+			// Try the next row ...
+			// But if we have a reflected row then return the value
+			if reflectedIndex > -1 {
 				break
 			}
 		}
 
-		reflections++
 	}
 
-	if reflections > 0 {
-		return (reflections / 2) + 1
-	}
-
-	return reflections
+	return reflectedIndex
 }
