@@ -1,4 +1,4 @@
-package problems_13_1
+package problems_13_2
 
 import (
 	"fmt"
@@ -83,16 +83,12 @@ func findVerticalReflections(input []string) int {
 func findHorizontalReflections(input []string) int {
 	for i := 1; i < len(input); i++ {
 
-		// We have a reflected rows
-		if input[i-1] == input[i] {
-			// Iterate from the reflectedIndex (+1 and -1) value, to verify if it'is a perfect reflection
-			reflectionResult := checkPerfectReflection(input, i)
+		reflectionResult := checkPerfectReflection(input, i)
 
-			// Try the next row ...
-			// But if we have a reflected row then return the value
-			if reflectionResult > -1 {
-				return reflectionResult
-			}
+		// Try the next row ...
+		// But if we have a reflected row then return the value
+		if reflectionResult {
+			return i
 		}
 
 	}
@@ -100,13 +96,42 @@ func findHorizontalReflections(input []string) int {
 	return -1
 }
 
-func checkPerfectReflection(input []string, reflectedIndex int) int {
+func checkPerfectReflection(input []string, reflectedIndex int) bool {
+	smudgeChecked := false // We can change a # to a . (and viceversa) just once!
+
 	// Iterate from the reflectedIndex (+1 and -1) value, to verify if it'is a perfect reflection (until edges)
 	for j, k := reflectedIndex, reflectedIndex-1; j < len(input) && k >= 0; j, k = j+1, k-1 {
 		if input[j] != input[k] {
-			return -1
+			// If we haven't fixed AND the row has a smudge
+			// then we change the var value (because it's possible just once!)
+			if !smudgeChecked && hasSmudge(input[j], input[k]) {
+				smudgeChecked = true
+
+				continue
+			}
+
+			// Id both rows doesn't have reflection and doesn't have smudge then there is not reflection
+			return false
 		}
 	}
 
-	return reflectedIndex
+	// Now we have to check if we change a char in the row
+	return smudgeChecked
+}
+
+func hasSmudge(a, b string) bool {
+	diffChar := 0
+
+	// Compare char by char of the row, if we have just one different (at the same index order) it has a smudge!
+	for i := 0; i < len(a); i++ {
+		if a[i] != b[i] {
+			diffChar++
+		}
+	}
+
+	if diffChar == 1 {
+		return true
+	}
+
+	return false
 }
