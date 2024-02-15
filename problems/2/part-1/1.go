@@ -34,11 +34,10 @@ func SolveChallenge(problemId string) string {
 }
 
 func verifyMatch(input string) int {
-	// This regex will extract the groups: [ammount] [color] given each input
-	bagPattern := regexp.MustCompile(`(\d+)\s+(\w+)`)
-
-	// Get the sets per game
-	groups := strings.Split(input, ";")
+	var (
+		bagPattern          = regexp.MustCompile(`(\d+)\s+(\w+)`) // This regex will extract the groups: [ammount] [color] given each input
+		groups     []string = strings.Split(input, ";")           // Get the sets per game
+	)
 
 	// Iterate over each group and extract numbers per color
 	for _, group := range groups {
@@ -62,10 +61,10 @@ func verifyMatch(input string) int {
 		}
 	}
 
-	gameIdPattern := regexp.MustCompile(`Game\s*(\d+):`)
-
-	// Find the game ID
-	match := gameIdPattern.FindStringSubmatch(input)
+	var (
+		gameIdPattern = regexp.MustCompile(`Game\s*(\d+):`)
+		match         = gameIdPattern.FindStringSubmatch(input) // Find the game ID
+	)
 
 	// Convert the matched number from string to int
 	gameId, err := strconv.Atoi(match[1])

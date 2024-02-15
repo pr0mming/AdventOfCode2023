@@ -15,9 +15,11 @@ func SolveChallenge(problemId string) string {
 	scanner := common_functions.CreateInputScanner(inputFilePath)
 	defer scanner.File.Close()
 
-	var answer = 0
-	var cards []string
-	var cardsMemo = make(map[int]int) // We use it for map[index card] = number of cards/copies
+	var (
+		answer    int = 0
+		cards     []string
+		cardsMemo = make(map[int]int) // We use it for map[index card] = number of cards/copies
+	)
 
 	// Fill the maps first
 	for i := 0; scanner.Scan(); i++ {
@@ -54,9 +56,11 @@ func SolveChallenge(problemId string) string {
 
 func computeScore(winningNumbers []string, myNumbers []string) int {
 	// Convert the arr string to arr integer, because it's used for Binary Search
-	integersForWN := common_functions.GetIntegersArr(winningNumbers, true)
-	integersForMN := common_functions.GetIntegersArr(myNumbers, true)
-	n := 0
+	var (
+		integersForWN []int = common_functions.GetIntegersArr(winningNumbers, true)
+		integersForMN []int = common_functions.GetIntegersArr(myNumbers, true)
+		n             int   = 0
+	)
 
 	for _, v := range integersForMN {
 		i := sort.Search(len(integersForWN), func(i int) bool {

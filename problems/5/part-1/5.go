@@ -17,9 +17,11 @@ func SolveChallenge(problemId string) string {
 	scanner := common_functions.CreateInputScanner(inputFilePath)
 	defer scanner.File.Close()
 
-	var seeds []int
-	var gardenMapTmp [][]int
-	var gardenMaps [][][]int
+	var (
+		seeds        []int
+		gardenMapTmp [][]int
+		gardenMaps   [][][]int
+	)
 
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())

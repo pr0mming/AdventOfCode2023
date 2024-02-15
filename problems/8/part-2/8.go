@@ -20,8 +20,10 @@ func SolveChallenge(problemId string) string {
 	scanner := common_functions.CreateInputScanner(inputFilePath)
 	defer scanner.File.Close()
 
-	var instructions string
-	var networkMap = make(map[string][2]string)
+	var (
+		instructions string
+		networkMap   = make(map[string][2]string)
+	)
 
 	// Keep the instructions
 	for scanner.Scan() {
@@ -75,10 +77,11 @@ func SolveChallenge(problemId string) string {
 }
 
 func getNetworkInput(scanner common_types.FileInputScanner) ([]string, map[string][2]string) {
-	var startingNodes []string
-	var networkMap = make(map[string][2]string)
-
-	splitPattern := regexp.MustCompile(`(\w+)\s*=\s*\(([^)]+)\)`)
+	var (
+		splitPattern  = regexp.MustCompile(`(\w+)\s*=\s*\(([^)]+)\)`)
+		startingNodes []string
+		networkMap    = make(map[string][2]string)
+	)
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -103,9 +106,11 @@ func getNetworkInput(scanner common_types.FileInputScanner) ([]string, map[strin
 }
 
 func computeStepByNode(startNode string, instructions string, networkMap map[string][2]string) int {
-	steps := 0
-	currentKeyPath := startNode // AAA
-	currentIndexIns := 0        // Used to control if we are at the last instruction
+	var (
+		steps           int    = 0
+		currentKeyPath  string = startNode // AAA
+		currentIndexIns int    = 0         // Used to control if we are at the last instruction
+	)
 
 	for {
 		// Avoid overflow

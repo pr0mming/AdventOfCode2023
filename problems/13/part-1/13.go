@@ -93,8 +93,8 @@ func findHorizontalReflections(input []string) int {
 			reflectedIndex = i
 
 			// Iterate from the reflectedIndex (+1 and -1) value, to verify if it'is a perfect reflection
-			for i, j := reflectedIndex, reflectedIndex-1; i < lenInput && j >= 0; i, j = i+1, j-1 {
-				if input[i] != input[j] {
+			for j, k := reflectedIndex, reflectedIndex-1; j < lenInput && k >= 0; j, k = j+1, k-1 {
+				if input[j] != input[k] {
 					// It's not actually reflected...
 					reflectedIndex = -1
 					break

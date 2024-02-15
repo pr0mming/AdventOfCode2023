@@ -36,9 +36,11 @@ func SolveChallenge(problemId string) string {
 
 func computeScore(winningNumbers []string, myNumbers []string) int {
 	// Convert the arr string to arr integer, because it's used for Binary Search
-	integersForWN := common_functions.GetIntegersArr(winningNumbers, true)
-	integersForMN := common_functions.GetIntegersArr(myNumbers, true)
-	n := 0
+	var (
+		integersForWN []int = common_functions.GetIntegersArr(winningNumbers, true)
+		integersForMN []int = common_functions.GetIntegersArr(myNumbers, true)
+		n             int   = 0
+	)
 
 	for _, v := range integersForMN {
 		i := sort.Search(len(integersForWN), func(i int) bool {

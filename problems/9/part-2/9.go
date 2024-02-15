@@ -29,9 +29,11 @@ func SolveChallenge(problemId string) string {
 }
 
 func computeHistoryRecord(historyRecord []int) int {
-	var zeros int                            // Flag to check if we have all the values of the history record are zeros
-	var offsetIndex = len(historyRecord) - 1 // Each iteration the history records is len - 1, we use it to control the new record and access the last item
-	var sequence []int                       // Keep all the first numbers for each new history record
+	var (
+		zeros       int   = 0                      // Flag to check if we have all the values of the history record are zeros
+		offsetIndex int   = len(historyRecord) - 1 // Each iteration the history records is len - 1, we use it to control the new record and access the last item
+		sequence    []int                          // Keep all the first numbers for each new history record
+	)
 
 	for zeros < len(historyRecord) {
 		// New empty copy of the history record

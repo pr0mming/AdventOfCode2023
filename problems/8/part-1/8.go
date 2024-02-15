@@ -19,8 +19,10 @@ func SolveChallenge(problemId string) string {
 	scanner := common_functions.CreateInputScanner(inputFilePath)
 	defer scanner.File.Close()
 
-	var instructions string
-	var networkMap = make(map[string][2]string)
+	var (
+		instructions string
+		networkMap   = make(map[string][2]string)
+	)
 
 	// Keep the instructions
 	for scanner.Scan() {
@@ -36,9 +38,11 @@ func SolveChallenge(problemId string) string {
 	// Use logic to map the string inputs in the map
 	networkMap = getNetworkInput(*scanner)
 
-	answer := 0
-	currentKeyPath := STARTING_POINT_REF // AAA
-	currentIndexIns := 0                 // Used to control if we are at the last instruction
+	var (
+		answer          int    = 0
+		currentKeyPath  string = STARTING_POINT_REF // AAA
+		currentIndexIns int    = 0                  // Used to control if we are at the last instruction
+	)
 
 	for {
 		// Avoid overflow
@@ -75,9 +79,10 @@ func SolveChallenge(problemId string) string {
 }
 
 func getNetworkInput(scanner common_types.FileInputScanner) map[string][2]string {
-	var networkMap = make(map[string][2]string)
-
-	splitPattern := regexp.MustCompile(`(\w+)\s*=\s*\(([^)]+)\)`)
+	var (
+		networkMap   = make(map[string][2]string)
+		splitPattern = regexp.MustCompile(`(\w+)\s*=\s*\(([^)]+)\)`)
+	)
 
 	for scanner.Scan() {
 		line := scanner.Text()

@@ -16,8 +16,10 @@ func SolveChallenge(problemId string) string {
 	defer scanner.File.Close()
 
 	// Keep the values in the same format (time-distance) in an array (2 rows)
-	var paperSheet [2][]int
-	i := 0
+	var (
+		paperSheet [2][]int
+		i          int = 0
+	)
 
 	for scanner.Scan() {
 		line := scanner.Text()

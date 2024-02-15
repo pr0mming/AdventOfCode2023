@@ -27,13 +27,11 @@ func SolveChallenge(problemId string) string {
 }
 
 func getCubesProd(input string) int {
-	cubesDict := make(map[string]int)
-
-	// This regex will extract the groups: [ammount] [color] given each input
-	bagPattern := regexp.MustCompile(`(\d+)\s+(\w+)`)
-
-	// Get the sets per game
-	groups := strings.Split(input, ";")
+	var (
+		bagPattern          = regexp.MustCompile(`(\d+)\s+(\w+)`) // This regex will extract the groups: [ammount] [color] given each input
+		groups     []string = strings.Split(input, ";")           // Get the sets per game
+		cubesDict           = make(map[string]int)
+	)
 
 	// Iterate over each group and extract numbers per color
 	for _, group := range groups {
@@ -58,7 +56,7 @@ func getCubesProd(input string) int {
 		}
 	}
 
-	var cubeProd = 1
+	var cubeProd int = 1
 	for _, value := range cubesDict {
 		cubeProd *= value
 	}

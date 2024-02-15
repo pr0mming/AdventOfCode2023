@@ -43,13 +43,15 @@ func SolveChallenge(problemId string) string {
 	pipeNetwork, animalPos := processPipeNetworkInput(*scanner)
 
 	// At the beginning the animal has only 4 directions to travel...
-	var animalSteps float64 = 0
-	var animalPositions = [4]int{
-		DIRECTION_RIGHT_ENUM,
-		DIRECTION_BOTTOM_ENUM,
-		DIRECTION_LEFT_ENUM,
-		DIRECTION_UP_ENUM,
-	}
+	var (
+		animalSteps     float64 = 0
+		animalPositions         = [4]int{
+			DIRECTION_RIGHT_ENUM,
+			DIRECTION_BOTTOM_ENUM,
+			DIRECTION_LEFT_ENUM,
+			DIRECTION_UP_ENUM,
+		}
+	)
 
 	for _, animalDir := range animalPositions {
 
