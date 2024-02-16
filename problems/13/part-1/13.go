@@ -90,8 +90,8 @@ func findHorizontalReflections(input []string) int {
 
 			// Try the next row ...
 			// But if we have a reflected row then return the value
-			if reflectionResult > -1 {
-				return reflectionResult
+			if reflectionResult {
+				return i
 			}
 		}
 
@@ -100,13 +100,13 @@ func findHorizontalReflections(input []string) int {
 	return -1
 }
 
-func checkPerfectReflection(input []string, reflectedIndex int) int {
+func checkPerfectReflection(input []string, reflectedIndex int) bool {
 	// Iterate from the reflectedIndex (+1 and -1) value, to verify if it'is a perfect reflection (until edges)
 	for j, k := reflectedIndex, reflectedIndex-1; j < len(input) && k >= 0; j, k = j+1, k-1 {
 		if input[j] != input[k] {
-			return -1
+			return false
 		}
 	}
 
-	return reflectedIndex
+	return true
 }

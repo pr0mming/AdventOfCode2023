@@ -123,15 +123,11 @@ func hasSmudge(a, b string) bool {
 	diffChar := 0
 
 	// Compare char by char of the row, if we have just one different (at the same index order) it has a smudge!
-	for i := 0; i < len(a); i++ {
+	for i := 0; i < len(a) && diffChar <= 2; i++ {
 		if a[i] != b[i] {
 			diffChar++
 		}
 	}
 
-	if diffChar == 1 {
-		return true
-	}
-
-	return false
+	return diffChar == 1
 }
