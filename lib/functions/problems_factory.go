@@ -15,6 +15,7 @@ import (
 	problems_13_1 "aoc.2023/problems/13/part-1"
 	problems_13_2 "aoc.2023/problems/13/part-2"
 	problems_14_1 "aoc.2023/problems/14/part-1"
+	problems_14_2 "aoc.2023/problems/14/part-2"
 	problems_2_1 "aoc.2023/problems/2/part-1"
 	problems_2_2 "aoc.2023/problems/2/part-2"
 	problems_3_1 "aoc.2023/problems/3/part-1"
@@ -95,12 +96,15 @@ func SolveProblemByKey(args []string) (string, error) {
 		answer = problems_13_2.SolveChallenge(problemId)
 	case "141":
 		answer = problems_14_1.SolveChallenge(problemId)
+	case "142":
+		answer = problems_14_2.SolveChallenge(problemId)
 	default:
 		return "", errors.New("the given args aren not in a valid range, try something like: [1 1]")
 	}
 
 	duration := time.Since(start)
-	fmt.Println(fmt.Sprintf("This solution took: %s", duration))
+	fmt.Printf("This solution took: %s", duration)
+	fmt.Println()
 
 	return answer, nil
 }
