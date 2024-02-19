@@ -30,6 +30,8 @@ const (
 	ROLL_WEST_DIRECTION  = 1
 	ROLL_SOUTH_DIRECTION = 2
 	ROLL_EAST_DIRECTION  = 3
+
+	SPIN_CYCLE_NUMBER = 1000000000
 )
 
 func SolveChallenge(problemId string) string {
@@ -39,20 +41,38 @@ func SolveChallenge(problemId string) string {
 	defer scanner.File.Close()
 
 	var (
-		answer            int = 0
-		totalLoadsHistory [][2]int
+		answer            int      = 0
+		totalLoadsHistory [][2]int // Used to identify a repeated score
 		rocksArr          = processPlatformInput(*scanner)
 	)
 
 	for {
 		totalLoads := getSpinCycle(&rocksArr)
+
+		// Find the new score (rows and columns) in the array
 		historyIndex := slices.IndexFunc(totalLoadsHistory, func(item [2]int) bool {
 			return item[0] == totalLoads[0] && item[1] == totalLoads[1]
 		})
 
+		// If we don't have any result then we continue the loop
+		// The point here is to check if the position of each rock (column and rows) using the total load is a pattern
 		if historyIndex == -1 {
 			totalLoadsHistory = append(totalLoadsHistory, totalLoads)
 		} else {
+			// We have a pattern!
+			// something like [1, 1, 1, 2, 4], 2, 4, 2, 4 ...
+
+			// We need to know the length of the repeated group [2, 4] = 2 items
+			offset := len(totalLoadsHistory) - historyIndex
+
+			// Using mod operation we can calculate what is the last element (of the array) in the sequence
+			mod := (SPIN_CYCLE_NUMBER - historyIndex) % offset
+			offsetIndex := mod - 1
+
+			// Starting from the index of the repeated group + mod operation result, we can get the total load (rows) of the item
+			index := historyIndex + offsetIndex
+			answer = totalLoadsHistory[index][0]
+
 			break
 		}
 	}
@@ -66,7 +86,6 @@ func processPlatformInput(scanner common_types.FileInputScanner) [][2]int {
 		rocksArr [][2]int
 	)
 
-	// Process from the row 1
 	for scanner.Scan() {
 		line := scanner.Text()
 		MAX_COLUMN_INDEX = len(line)
@@ -74,6 +93,7 @@ func processPlatformInput(scanner common_types.FileInputScanner) [][2]int {
 		for j := 0; j < len(line); j++ {
 			switch line[j] {
 
+			// Now we have to save the rounded rocks as blocked points (because we move the rows in 4 directions)
 			case ROUNDED_ROCK_FLAG:
 				rocksArr = append(rocksArr, [2]int{i, j})
 				addBlockedPos(i, j)
@@ -97,11 +117,14 @@ func getSpinCycle(rocksArr *[][2]int) [2]int {
 		totalColsLoad int = 0
 	)
 
+	// 0 - 3 because is the representation of the 4 movements using Enumerations
 	for direction := 0; direction < 4; direction++ {
 
 		switch direction {
 		case ROLL_NORTH_DIRECTION, ROLL_WEST_DIRECTION:
 
+			// When we calculate each movement, for example noth and west we need to start from up to bottom
+			// For the other movements is the opposite (bottom to up)
 			getNortAndhWestSpin(rocksArr, direction)
 
 		case ROLL_SOUTH_DIRECTION:
@@ -110,6 +133,7 @@ func getSpinCycle(rocksArr *[][2]int) [2]int {
 
 		case ROLL_EAST_DIRECTION:
 
+			// How it's the last movement we need to get the total load
 			totalRowsLoad, totalColsLoad = getEastSpin(rocksArr, direction)
 
 		}
@@ -119,6 +143,7 @@ func getSpinCycle(rocksArr *[][2]int) [2]int {
 }
 
 func getNortAndhWestSpin(rocksArr *[][2]int, direction int) {
+	// Sort array in ASC order for [X, Y]
 	sort.Slice(*rocksArr, func(i, j int) bool {
 		if (*rocksArr)[i][0] != (*rocksArr)[j][0] {
 			return (*rocksArr)[i][0] < (*rocksArr)[j][0]
@@ -138,6 +163,8 @@ func getNortAndhWestSpin(rocksArr *[][2]int, direction int) {
 }
 
 func getSouthSpin(rocksArr *[][2]int, direction int) {
+	// Sort array in DESC order for [X, Y]
+
 	sort.Slice(*rocksArr, func(i, j int) bool {
 		if (*rocksArr)[i][0] != (*rocksArr)[j][0] {
 			return (*rocksArr)[i][0] > (*rocksArr)[j][0]
@@ -157,6 +184,8 @@ func getSouthSpin(rocksArr *[][2]int, direction int) {
 }
 
 func getEastSpin(rocksArr *[][2]int, direction int) (int, int) {
+	// Sort array in DESC order for [X, Y]
+
 	sort.Slice(*rocksArr, func(i, j int) bool {
 		if (*rocksArr)[i][0] != (*rocksArr)[j][0] {
 			return (*rocksArr)[i][0] > (*rocksArr)[j][0]
@@ -178,6 +207,8 @@ func getEastSpin(rocksArr *[][2]int, direction int) (int, int) {
 
 		(*rocksArr)[i] = getNewCycleRockPosition(row, col, direction)
 
+		// We need now both scores (row and column)
+		// It's to check if any has changed its position in the next iteration
 		totalRowsLoad += (MAX_ROW_INDEX) - (*rocksArr)[i][0]
 		totalColsLoad += (MAX_COLUMN_INDEX) - (*rocksArr)[i][1]
 	}
@@ -185,22 +216,22 @@ func getEastSpin(rocksArr *[][2]int, direction int) (int, int) {
 	return totalRowsLoad, totalColsLoad
 }
 
-func getNewCycleRockPosition(i, j, direction int) [2]int {
+func getNewCycleRockPosition(row, col, direction int) [2]int {
 	switch direction {
 	case ROLL_NORTH_DIRECTION:
-		i = getNewNorthPos(i, j)
+		row = getNewNorthPos(row, col)
 
 	case ROLL_WEST_DIRECTION:
-		j = getNewWestPos(i, j)
+		col = getNewWestPos(row, col)
 
 	case ROLL_SOUTH_DIRECTION:
-		i = getNewSouthPos(i, j)
+		row = getNewSouthPos(row, col)
 
 	case ROLL_EAST_DIRECTION:
-		j = getNewEastPos(i, j)
+		col = getNewEastPos(row, col)
 	}
 
-	return [2]int{i, j}
+	return [2]int{row, col}
 }
 
 func getNewNorthPos(row, col int) int {
@@ -219,6 +250,7 @@ func getNewNorthPos(row, col int) int {
 		}
 
 		if row != nearBlockPos {
+			// If the rock has moved then we need update the map of blocked points
 			deleteBlockedPos(row, col)
 			addBlockedPos(nearBlockPos, col)
 		}
@@ -231,9 +263,8 @@ func getNewNorthPos(row, col int) int {
 
 func getNewWestPos(row, col int) int {
 	if _, ok := blockRowsMap[row]; ok {
-		nearBlockPos := 0 // It's the highest row position can get a rock
+		nearBlockPos := 0
 
-		// Iterate blocked rows, we try to put the rock in the position of blocked point + 1
 		colsPos := blockRowsMap[row]
 
 		for _, v := range colsPos {
@@ -261,7 +292,6 @@ func getNewSouthPos(row, col int) int {
 		rowsPos := blockColumnsMap[col]
 		nearBlockPos := MAX_ROW_INDEX - 1 // It's the highest row position can get a rock
 
-		// Iterate blocked rows, we try to put the rock in the position of blocked point + 1
 		for i := len(rowsPos) - 1; i >= 0; i-- {
 			v := rowsPos[i]
 
@@ -287,9 +317,8 @@ func getNewEastPos(row, col int) int {
 	if _, ok := blockRowsMap[row]; ok {
 
 		colsPos := blockRowsMap[row]
-		nearBlockPos := MAX_COLUMN_INDEX - 1 // It's the highest row position can get a rock
+		nearBlockPos := MAX_COLUMN_INDEX - 1
 
-		// Iterate blocked rows, we try to put the rock in the position of blocked point + 1
 		for i := len(colsPos) - 1; i >= 0; i-- {
 			v := colsPos[i]
 
@@ -317,15 +346,25 @@ func addBlockedPos(row, column int) {
 }
 
 func deleteBlockedPos(row, column int) {
-	rows := blockColumnsMap[column]
-	index := slices.Index(rows, row)
+	// Remove [X, Y] from both maps
 
-	blockColumnsMap[column] = append(rows[:index], rows[index+1:]...)
+	rows := blockColumnsMap[column]
+
+	if len(rows) == 1 {
+		delete(blockColumnsMap, column)
+	} else {
+		index := slices.Index(rows, row)
+		blockColumnsMap[column] = append(rows[:index], rows[index+1:]...)
+	}
 
 	columns := blockRowsMap[row]
-	index = slices.Index(columns, column)
 
-	blockRowsMap[row] = append(columns[:index], columns[index+1:]...)
+	if len(columns) == 1 {
+		delete(blockRowsMap, row)
+	} else {
+		index := slices.Index(columns, column)
+		blockRowsMap[row] = append(columns[:index], columns[index+1:]...)
+	}
 }
 
 func addItemToMap(m *map[int][]int, key, value int) {
