@@ -57,3 +57,5 @@ run_141:
 	go run main.go 14 1
 run_142:
 	go run main.go 14 2
+run_151:
+	go run main.go 15 1
