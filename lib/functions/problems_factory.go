@@ -17,6 +17,7 @@ import (
 	problems_14_1 "aoc.2023/problems/14/part-1"
 	problems_14_2 "aoc.2023/problems/14/part-2"
 	problems_15_1 "aoc.2023/problems/15/part-1"
+	problems_15_2 "aoc.2023/problems/15/part-2"
 	problems_2_1 "aoc.2023/problems/2/part-1"
 	problems_2_2 "aoc.2023/problems/2/part-2"
 	problems_3_1 "aoc.2023/problems/3/part-1"
@@ -101,6 +102,8 @@ func SolveProblemByKey(args []string) (string, error) {
 		answer = problems_14_2.SolveChallenge(problemId)
 	case "151":
 		answer = problems_15_1.SolveChallenge(problemId)
+	case "152":
+		answer = problems_15_2.SolveChallenge(problemId)
 	default:
 		return "", errors.New("the given args aren not in a valid range, try something like: [1 1]")
 	}
